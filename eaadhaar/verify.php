@@ -18,8 +18,7 @@ $xml_array = xml2array($xml_data);
 
 $reference_id = $xml_array['@attributes']['referenceId']; //
 $aadhar_id = substr($reference_id, 0, 4); // 
-$time_stamp = substr($reference_id, 4); //
-rename($xmlFile,$target_path.$reference_id.".xml");
+$time_stamp = substr($reference_id, 4,14); //
 $photo = $xml_array['UidData']['Pht']; 
 $dob = $xml_array['UidData']['Poi']['@attributes']['dob'];
 $email_hashed = $xml_array['UidData']['Poi']['@attributes']['e'];
@@ -242,7 +241,7 @@ body {
 .user-profile > img#avatar {
   padding: .7em;
   margin-left: .3em;
-  margin-top: 2.3em;
+  margin-top: 0.3em;
   height: 9.23em;
   width: 9.23em;
   border-radius: 1em;
@@ -277,8 +276,10 @@ button {
 
 </style>
 <body>
-<h1 class="title">KYC Details from Aadhaar</h1>
 <div class="user-profile">
+<h1 class="title">KYC Details from Aadhaar</h1>
+
+    <div><h3 class="title">EKYC Downloaded Date & Time: <span><?php echo date('d/m/Y H:i:s', strtotime($time_stamp)); ?></span></h3></div>
 <?php if($d && $s) {?>
 	<img id="avatar" src="<?php echo 'extracted-xml/'.$reference_id.'.png'; ?>" />
     <div id="fullname"><?php echo $name . " (" . $age . ")" ?> </div>
@@ -288,9 +289,10 @@ button {
       <div><label style="color:#16a085;">Email: </label><span><?php echo $email_get ?></span></div>
       <div><label style="color:#16a085;">Mobile: </label><span><?php echo $phone_get ?></span></div>
       <div><label style="color:#16a085;">Address: </label><span><?php echo $address . "," . $street . "," . $landmark . "," . $vtc . "," . $loc . "," . $postoffice ?></span></div>
-      <div><label style="color:#16a085;">PinCode: </label><span><?php echo $pincode ?></span></div>
+      <div><label style="color:#16a085;">PinCode: </label><span><?php echo $pincode ?></span></div>      
     </div>
     <div class="footer">
+    
       <button id="btn">
       <?php if(!$isEmailValid && !$isMobileValid) { ?> Both Email and Mobile Verification Failed <?php } elseif (!$isMobileValid) { ?> Mobile Verification Failed <?php } elseif(!$isEmailValid) {?> Email Verification Failed <?php } else{?>Verification Success<?php }?></button>
     </div>  

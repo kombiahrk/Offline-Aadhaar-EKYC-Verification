@@ -1,4 +1,11 @@
 <?php
+function xml2array ( $xmlObject, $out = array () )
+{
+    foreach ( (array) $xmlObject as $index => $node )
+        $out[$index] = ( is_object ( $node ) ) ? xml2array ( $node ) : $node;
+
+    return $out;
+}
 $message = "";
 if($_POST){
 $email = $_POST['email'];
@@ -45,7 +52,16 @@ if($_FILES["zip_file"]["name"]) {
 			unlink($target_path);
 		}
 		$message = "Your .zip file was uploaded and unpacked.";
-		header("Location: verify.php?xml=" . substr($filename, 0, -4) . "&email=" . $email . "&phone=". $phone . "&p=" . $pass);
+		$target_path = "extracted-xml/";
+		$filename = substr($filename, 0, -4);
+		$xmlFile = $target_path.$filename.".xml";
+		$xmlDoc = new DOMDocument();
+		$xmlDoc->load($xmlFile);
+		$xml_data = simplexml_import_dom($xmlDoc) or die("Failed to load");
+		$xml_array = xml2array($xml_data);
+		$reference_id = $xml_array['@attributes']['referenceId'];
+		rename($xmlFile,$target_path.$reference_id.".xml");
+		header("Location: verify.php?xml=" . $reference_id . "&email=" . $email . "&phone=". $phone . "&p=" . $pass);
 		exit();
 	} else {	
 		$message = "There was a problem with the upload. Please try again.";

@@ -37,9 +37,15 @@ $street = $xml_array['UidData']['Poa']['@attributes']['street'];
 $subdistrict = $xml_array['UidData']['Poa']['@attributes']['subdist'];
 $vtc = $xml_array['UidData']['Poa']['@attributes']['vtc'];
 
+$dd_date = date('d-m-Y H:i:s', strtotime($time_stamp));
+
 $from = new DateTime(date('Y-m-d', strtotime($dob)));
 $to   = new DateTime('today');
 $age = $from->diff($to)->y;
+
+$ddfrom = new DateTime(date('Y-m-d', strtotime($time_stamp)));
+$ddto   = new DateTime('today');
+$diff = $ddto->diff($ddfrom)->format("%a");
 
 //$age = (date('Y') - date('Y',strtotime(date('Y-m-d', strtotime($dob)))));
 
@@ -279,7 +285,7 @@ button {
 <div class="user-profile">
 <h1 class="title">KYC Details from Aadhaar</h1>
 
-    <div><h3 class="title">EKYC Downloaded Date & Time: <span><?php echo date('d/m/Y H:i:s', strtotime($time_stamp)); ?></span></h3></div>
+    <div><h3 class="title">EKYC Downloaded Date & Time: <span><?php echo $dd_date?></span><?php if($diff>0){?></br><span><?php echo $diff?></span> Days Older.<?php }?></h3></div>
 <?php if($d && $s) {?>
 	<img id="avatar" src="<?php echo 'extracted-xml/'.$reference_id.'.png'; ?>" />
     <div id="fullname"><?php echo $name . " (" . $age . ")" ?> </div>

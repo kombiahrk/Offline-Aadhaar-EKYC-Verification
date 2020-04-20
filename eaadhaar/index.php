@@ -40,29 +40,34 @@ if($_FILES["zip_file"]["name"]) {
 		$message = "The file you are trying to upload is not a .zip file. Please try again.";
 	}
 
-	$target_path = "tmp-xml/".$filename;  // change this to the correct site path
+	$target_path = "tmp-xml/".$filename; 
 	if(move_uploaded_file($source, $target_path)) {
 		$zip = new ZipArchive();
 		$x = $zip->open($target_path);
 		if ($x === true) {
 			$zip->setPassword($pass);
-			$zip->extractTo("extracted-xml/"); // change this to the correct site path
-			$zip->close();
-	
-			unlink($target_path);
-		}
-		$message = "Your .zip file was uploaded and unpacked.";
-		$target_path = "extracted-xml/";
-		$filename = substr($filename, 0, -4);
-		$xmlFile = $target_path.$filename.".xml";
-		$xmlDoc = new DOMDocument();
-		$xmlDoc->load($xmlFile);
-		$xml_data = simplexml_import_dom($xmlDoc) or die("Failed to load");
-		$xml_array = xml2array($xml_data);
-		$reference_id = $xml_array['@attributes']['referenceId'];
-		rename($xmlFile,$target_path.$reference_id.".xml");
-		header("Location: verify.php?xml=" . $reference_id . "&email=" . $email . "&phone=". $phone . "&p=" . $pass);
-		exit();
+			$code = $zip->extractTo("extracted-xml/");	
+			echo $code;
+			if($code === true){				
+				$zip->close();	
+				unlink($target_path);
+				$message = "Your .zip file was uploaded and unpacked.";
+				$target_path = "extracted-xml/";
+				$filename = substr($filename, 0, -4);
+				$xmlFile = $target_path.$filename.".xml";
+				$xmlDoc = new DOMDocument();
+				$xmlDoc->load($xmlFile);
+				$xml_data = simplexml_import_dom($xmlDoc) or die("Failed to load");
+				$xml_array = xml2array($xml_data);
+				$reference_id = $xml_array['@attributes']['referenceId'];
+				rename($xmlFile,$target_path.$reference_id.".xml");
+				header("Location: verify.php?xml=" . $reference_id . "&email=" . $email . "&phone=". $phone . "&p=" . $pass);
+				exit();
+			}
+			else{
+				$message = "Passcode is incorrect. <br> Please try again.";
+			}		
+		}		
 	} else {	
 		$message = "There was a problem with the upload. Please try again.";
 	}
@@ -191,7 +196,7 @@ body {
 <body>
 <div class="login-page">
   <div class="form">
-	<p class="message"><?php echo "Offline Aadhaar EKYC Verification" ?></p></br>
+	<h1 class="message"><?php echo "Offline Aadhaar EKYC Verification" ?></h1></br>
     <form class="login-form" enctype="multipart/form-data" method="post" action="">
       <input type="email" name="email" required placeholder="E-mail ID"/>
       <input type="text" name="phone" placeholder="Phone Number"/>

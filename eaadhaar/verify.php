@@ -83,7 +83,7 @@ else{
    //echo "Step 1 Verification Failed<br>";
 }
 
-$pub_key = openssl_pkey_get_public(file_get_contents('uidai_offline_publickey_19062019.cer'));
+$pub_key = openssl_pkey_get_public(file_get_contents('uidai_offline_publickey_26022021.cer'));
 $details  = openssl_pkey_get_details($pub_key);
 //var_dump($details);
 //var_dump($details['key']);
@@ -124,7 +124,7 @@ else{
     //echo "Step 2 Verification Failed<br>";
 }
 
-openssl_free_key($pub_key);
+unset($pub_key);
 ////////////////////////IMAGE PROCESS//////////////////////////////
 
 $bin = base64_decode($photo);
